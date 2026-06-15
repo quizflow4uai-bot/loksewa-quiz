@@ -4,384 +4,292 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Loksewa Quiz</title>
+
+<title>Loksewa Daily</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<style>
+<link rel="stylesheet" href="style.css">
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Noto Sans Devanagari',sans-serif;
-}
-
-body{
-background:#F8FAFC;
-display:flex;
-justify-content:center;
-min-height:100vh;
-}
-
-.container{
-width:100%;
-max-width:450px;
-padding:25px;
-}
-
-.top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
-}
-
-.progress{
-height:8px;
-background:#E2E8F0;
-border-radius:50px;
-overflow:hidden;
-margin-bottom:40px;
-}
-
-.progressFill{
-height:100%;
-width:0%;
-background:#60A5FA;
-transition:.3s;
-}
-
-.question{
-text-align:center;
-font-size:30px;
-font-weight:700;
-line-height:1.7;
-margin-bottom:40px;
-color:#1E293B;
-}
-
-.options{
-display:flex;
-flex-direction:column;
-gap:16px;
-}
-
-.option{
-background:white;
-padding:22px;
-border-radius:24px;
-border:2px solid #F1F5F9;
-cursor:pointer;
-transition:.2s;
-display:flex;
-align-items:center;
-gap:15px;
-}
-
-.circle{
-width:28px;
-height:28px;
-border-radius:50%;
-border:3px solid #BAE6FD;
-}
-
-.selected{
-background:#F3E8FF;
-border-color:#A78BFA;
-}
-
-.selected .circle{
-background:#7C3AED;
-border-color:#7C3AED;
-}
-
-.correct{
-background:#DCFCE7;
-}
-
-.wrong{
-background:#FEF3C7;
-}
-
-.explanation{
-margin-top:30px;
-background:white;
-padding:25px;
-border-radius:25px;
-display:none;
-line-height:1.8;
-max-height:250px;
-overflow:auto;
-}
-
-.bottom{
-margin-top:40px;
-display:flex;
-gap:15px;
-}
-
-button{
-flex:1;
-border:none;
-padding:20px;
-border-radius:40px;
-font-size:16px;
-cursor:pointer;
-}
-
-#prevBtn{
-background:#E2E8F0;
-}
-
-#nextBtn{
-background:#CBD5E1;
-color:white;
-}
-
-.enabled{
-background:black!important;
-}
-
-</style>
 </head>
 <body>
 
-<div class="container">
+<!-- MAIN QUIZ SCREEN -->
 
-<div class="top">
+<div class="container" id="quizContainer">
 
-<div>
-<span id="current">1</span>/<span id="total">1</span>
-</div>
+    <!-- HEADER -->
 
-<div>
-Score: <span id="score">0</span>
-</div>
+    <div class="top">
 
-</div>
+        <div class="question-counter">
 
-<div class="progress">
-<div class="progressFill" id="progressFill"></div>
-</div>
+            <span id="current">1</span>/<span id="total">20</span>
 
-<div class="question" id="question"></div>
+        </div>
 
-<div class="options" id="options"></div>
+        <div class="score-box">
 
-<div class="explanation" id="explanation"></div>
+            Score:
+            <span id="score">
 
-<div class="bottom">
+                0
 
-<button id="prevBtn">
-← Previous
-</button>
+            </span>
 
-<button id="nextBtn">
-Next →
-</button>
+        </div>
 
-</div>
+    </div>
 
-</div>
 
-<script>
+    <!-- PROGRESS -->
 
-let questions=[];
-let current=0;
-let score=0;
-let answers=[];
+    <div class="progress">
 
-fetch("questions.json")
-.then(res=>res.json())
-.then(data=>{
+        <div class="progressFill" id="progressFill"></div>
 
-questions=data.sort(()=>Math.random()-0.5);
+    </div>
 
-document.getElementById("total").innerHTML=questions.length;
 
-answers=new Array(questions.length);
+    <!-- QUESTION -->
 
-showQuestion();
+    <div class="question" id="question">
 
-});
+        Loading...
 
-function showQuestion(){
+    </div>
 
-let q=questions[current];
 
-document.getElementById("current").innerHTML=current+1;
+    <!-- OPTIONS -->
 
-document.getElementById("question").innerHTML=q.question;
+    <div class="options" id="options">
 
-document.getElementById("progressFill").style.width=
-((current+1)/questions.length)*100+"%";
+    </div>
 
-let html="";
 
-for(let key in q.options){
 
-html+=`
-<div class="option ${answers[current]==key?"selected":""}"
-onclick="selectAnswer('${key}')">
+    <!-- FEEDBACK -->
 
-<div class="circle"></div>
+    <div class="feedbackCard hidden" id="feedbackCard">
 
-<div>
+        <div id="answerStatus">
 
-${q.options[key]}
+        </div>
 
-</div>
 
-</div>
-`;
+        <div class="correctAnswerBox" id="correctAnswerBox">
 
-}
+        </div>
 
-document.getElementById("options").innerHTML=html;
 
-if(answers[current]){
+        <div class="explanationBox">
 
-document.getElementById("explanation").style.display="block";
+            <h3>
 
-document.getElementById("explanation").innerHTML=
-"<b>Explanation</b><br><br>"+q.studyPoint;
+                Explanation
 
-}else{
+            </h3>
 
-document.getElementById("explanation").style.display="none";
+            <div id="fullExplanation">
 
-}
+            </div>
 
-}
+        </div>
 
-function selectAnswer(choice){
+    </div>
 
-if(!answers[current]){
 
-answers[current]=choice;
 
-let q=questions[current];
+    <!-- BUTTONS -->
 
-if(choice===q.correctAnswer){
+    <div class="bottom">
 
-score+=1;
+        <button id="prevBtn">
 
-}else{
+            ← Previous
 
-score-=0.2;
+        </button>
 
-}
+        <button id="nextBtn">
 
-document.getElementById("score").innerHTML=
-score.toFixed(1);
+            Next →
 
-}
+        </button>
 
-showQuestion();
-
-document.getElementById("nextBtn")
-.classList.add("enabled");
-
-}
-
-document.getElementById("nextBtn")
-.onclick=()=>{
-
-if(current<questions.length-1){
-
-current++;
-
-showQuestion();
-
-}else{
-
-showResult();
-
-}
-
-};
-
-document.getElementById("prevBtn")
-.onclick=()=>{
-
-if(current>0){
-
-current--;
-
-showQuestion();
-
-}
-
-};
-
-function showResult(){
-
-let correct=0;
-let wrong=0;
-
-questions.forEach((q,i)=>{
-
-if(answers[i]==q.correctAnswer){
-
-correct++;
-
-}
-else{
-
-wrong++;
-
-}
-
-});
-
-document.body.innerHTML=`
-
-<div class="container">
-
-<div style="text-align:center">
-
-<h1>Finished</h1>
-
-<br>
-
-<h2>${score.toFixed(1)}</h2>
-
-<br>
-
-Correct : ${correct}
-
-<br><br>
-
-Wrong : ${wrong}
-
-<br><br>
-
-Accuracy :
-${((correct/questions.length)*100).toFixed(1)}%
-
-<br><br><br>
-
-<div style="background:white;
-padding:25px;
-border-radius:25px;
-line-height:1.8">
-
-Consistency beats intensity.
-
-One page revised every day is stronger than ten hours once a week.
+    </div>
 
 </div>
 
-</div>
+
+
+<!-- RESULT SCREEN -->
+
+<div class="resultScreen hidden" id="resultScreen">
+
+    <div class="resultCard">
+
+        <div class="emoji">
+
+            🏆
+
+        </div>
+
+        <h1>
+
+            Finished
+
+        </h1>
+
+        <h2 id="finalScore">
+
+            0
+
+        </h2>
+
+
+        <div class="stats">
+
+            <div class="stat">
+
+                <div id="correctCount">
+
+                    0
+
+                </div>
+
+                <p>
+
+                    Correct
+
+                </p>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div id="wrongCount">
+
+                    0
+
+                </div>
+
+                <p>
+
+                    Wrong
+
+                </p>
+
+            </div>
+
+
+            <div class="stat">
+
+                <div id="skippedCount">
+
+                    0
+
+                </div>
+
+                <p>
+
+                    Skipped
+
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="accuracy">
+
+            Accuracy :
+
+            <span id="accuracy">
+
+                0%
+
+            </span>
+
+        </div>
+
+
+        <div class="quote" id="quote">
+
+            Consistency beats intensity.
+            One page revised every day is stronger than ten hours once a week.
+
+        </div>
+
+
+
+        <button id="reviewBtn">
+
+            Review Answers
+
+        </button>
+
+
+        <button id="reattemptWrongBtn">
+
+            Reattempt Wrong Questions
+
+        </button>
+
+
+        <button id="restartBtn">
+
+            Start Again
+
+        </button>
+
+    </div>
 
 </div>
 
-`;
 
-}
 
-</script>
+<!-- REVIEW SCREEN -->
+
+<div class="reviewScreen hidden" id="reviewScreen">
+
+    <div class="reviewHeader">
+
+        <button id="backBtn">
+
+            ← Back
+
+        </button>
+
+
+        <h2>
+
+            Review
+
+        </h2>
+
+
+        <button id="reattemptAllBtn">
+
+            Reattempt All
+
+        </button>
+
+    </div>
+
+
+    <div id="reviewContainer">
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
