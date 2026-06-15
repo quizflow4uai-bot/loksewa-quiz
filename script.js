@@ -1,232 +1,235 @@
-// =========================
-// GLOBAL VARIABLES
-// =========================
-
-let allQuestions = [];
 let questions = [];
+let current = 0;
+let answers = [];
+let score = 0;
 
-let currentQuestion = 0;
+fetch("questions.json")
+.then(res => res.json())
+.then(data => {
 
-let correctCount = 0;
-let wrongCount = 0;
-let skippedCount = 0;
+    questions = shuffle(data);
 
-let finalScore = 0;
+    answers = Array(questions.length).fill(null);
 
-let selectedQuestionCount = 10;
+    showQuestion();
 
-// =========================
-// SCREEN HELPERS
-// =========================
-
-function showScreen(id){
-
-    document.querySelectorAll(".screen")
-    .forEach(screen=>screen.classList.remove("active"));
-
-    document.getElementById(id)
-    .classList.add("active");
-
-}
-
-// =========================
-// QUESTION COUNT
-// =========================
-
-const qDisplay = document.getElementById("q-count-display");
-
-document.getElementById("q-plus").onclick=()=>{
-
-    if(selectedQuestionCount<50){
-
-        selectedQuestionCount +=5;
-
-        qDisplay.innerHTML = selectedQuestionCount;
-
-    }
-
-};
-
-document.getElementById("q-minus").onclick=()=>{
-
-    if(selectedQuestionCount>5){
-
-        selectedQuestionCount -=5;
-
-        qDisplay.innerHTML = selectedQuestionCount;
-
-    }
-
-};
-
-// =========================
-// SHUFFLE
-// =========================
+});
 
 function shuffle(array){
 
-    return [...array]
-    .sort(()=>Math.random()-0.5);
+    return [...array].sort(() => Math.random() - 0.5);
 
 }
 
-// =========================
-// START QUIZ
-// =========================
+function calculateScore(){
 
-document.getElementById("btn-start")
-.onclick=async()=>{
+    score = 0;
 
-    showScreen("screen-loading");
+    answers.forEach((answer,index)=>{
 
-    try{
+        if(answer===null) return;
 
-        let response = await fetch("questions.json");
+        if(answer===questions[index].correctAnswer){
 
-        allQuestions = await response.json();
+            score += 1;
 
-        questions = shuffle(allQuestions)
-        .slice(0,selectedQuestionCount);
+        }else{
 
-        currentQuestion = 0;
+            score -= 0.2;
 
-        correctCount = 0;
-        wrongCount = 0;
-        skippedCount = 0;
-        finalScore = 0;
+        }
 
-        showScreen("screen-quiz");
+    });
+
+    document.getElementById("score").innerHTML = score.toFixed(1);
+
+}
+
+function showQuestion(){
+
+    let q = questions[current];
+
+    document.getElementById("counter").innerHTML =
+    `Question ${current+1} / ${questions.length}`;
+
+    document.getElementById("question").innerHTML = q.question;
+
+    let progress = ((current+1)/questions.length)*100;
+
+    document.getElementById("progressBar").style.width =
+    progress+"%";
+
+    let optionsDiv = document.getElementById("options");
+
+    optionsDiv.innerHTML = "";
+
+    document.getElementById("result").innerHTML = "";
+
+    for(let key in q.options){
+
+        let btn = document.createElement("button");
+
+        btn.className = "option";
+
+        btn.innerHTML = `${key}. ${q.options[key]}`;
+
+        btn.onclick = ()=>selectAnswer(key);
+
+        if(answers[current]!==null){
+
+            btn.disabled=true;
+
+            if(key===q.correctAnswer){
+
+                btn.classList.add("correct");
+
+            }
+
+            if(key===answers[current] &&
+               answers[current]!==q.correctAnswer){
+
+                btn.classList.add("wrong");
+
+            }
+
+        }
+
+        optionsDiv.appendChild(btn);
+
+    }
+
+    if(answers[current]!==null){
+
+        document.getElementById("result").innerHTML =
+
+        `<b>📖 Explanation</b><br><br>${q.studyPoint}`;
+
+    }
+
+}
+
+function selectAnswer(choice){
+
+    if(answers[current]!==null) return;
+
+    answers[current]=choice;
+
+    calculateScore();
+
+    showQuestion();
+
+}
+
+document.getElementById("nextBtn").onclick = ()=>{
+
+    if(current<questions.length-1){
+
+        current++;
+
+        showQuestion();
+
+    }else{
+
+        showFinal();
+
+    }
+
+};
+
+document.getElementById("prevBtn").onclick = ()=>{
+
+    if(current>0){
+
+        current--;
 
         showQuestion();
 
     }
 
-    catch(err){
-
-        alert("Questions could not be loaded.");
-
-        showScreen("screen-home");
-
-    }
-
 };
 
-// =========================
-// SHOW QUESTION
-// =========================
+function showFinal(){
 
-function showQuestion(){
+    let correct = 0;
 
-    let q = questions[currentQuestion];
+    let wrong = 0;
 
-    document.getElementById("q-num")
-    .innerHTML =
-    `${currentQuestion+1} / ${questions.length}`;
+    let skipped = 0;
 
-    let progress =
-    ((currentQuestion+1)/questions.length)*100;
+    answers.forEach((answer,index)=>{
 
-    document.getElementById("progress-fill")
-    .style.width = progress+"%";
+        if(answer===null){
 
-    document.getElementById("question-text")
-    .innerHTML = q.question;
+            skipped++;
 
-    let grid =
-    document.getElementById("options-grid");
+        }
+        else if(answer===questions[index].correctAnswer){
 
-    grid.innerHTML="";
+            correct++;
 
-    document.getElementById("feedback-box")
-    .classList.add("hidden");
+        }
+        else{
 
-    for(let key in q.options){
+            wrong++;
 
-        let button =
-        document.createElement("button");
+        }
 
-        button.className =
-        "option-btn";
+    });
 
-        button.innerHTML =
-        `${key}. ${q.options[key]}`;
+    let percentage =
+    ((correct/questions.length)*100).toFixed(1);
 
-        button.onclick=
-        ()=>selectAnswer(key);
+    let badge = "📚 Need Practice";
 
-        grid.appendChild(button);
+    if(percentage>=90) badge="🥇 Legend";
+    else if(percentage>=80) badge="🥈 Excellent";
+    else if(percentage>=70) badge="🥉 Very Good";
+    else if(percentage>=60) badge="👍 Good";
 
-    }
+    document.body.innerHTML = `
 
-}
+    <div style="max-width:700px;margin:50px auto;
+    background:white;padding:40px;border-radius:25px;
+    text-align:center">
 
-// =========================
-// ANSWER
-// =========================
+    <h1>🏆 Quiz Completed</h1>
 
-function selectAnswer(choice){
+    <br>
 
-    let q = questions[currentQuestion];
+    <h2>${badge}</h2>
 
-    let answerText =
-    q.options[q.correctAnswer];
+    <br>
 
-    if(choice===q.correctAnswer){
+    <h2>Final Score : ${score.toFixed(1)}</h2>
 
-        correctCount++;
+    <br>
 
-        finalScore +=1;
+    <p>✅ Correct : ${correct}</p>
 
-        document.getElementById("feedback-answer")
-        .innerHTML =
-        "✅ सही उत्तर";
+    <p>❌ Wrong : ${wrong}</p>
 
-    }
+    <p>⏭️ Skipped : ${skipped}</p>
 
-    else{
+    <br>
 
-        wrongCount++;
+    <h2>${percentage}% Accuracy</h2>
 
-        finalScore -=0.2;
+    <br>
 
-        document.getElementById("feedback-answer")
-        .innerHTML =
-        `❌ गलत<br>सही उत्तर: ${answerText}`;
+    <button onclick="location.reload()"
+    style="padding:15px 25px;
+    border:none;
+    background:#2563eb;
+    color:white;
+    border-radius:15px;
+    cursor:pointer">
 
-    }
+    🔄 Start Again
 
-    document.getElementById("live-correct")
-    .innerHTML = correctCount;
+    </button>
 
-    document.getElementById("live-wrong")
-    .innerHTML = wrongCount;
+    </div>
 
-    document.getElementById("feedback-study")
-    .innerHTML =
-    q.studyPoint;
-
-    document.getElementById("feedback-box")
-    .classList.remove("hidden");
+    `;
 
 }
-
-// =========================
-// NEXT BUTTON
-// =========================
-
-document.getElementById("btn-next")
-.onclick=()=>{
-
-    currentQuestion++;
-
-    if(currentQuestion>=questions.length){
-
-        alert("Module 2 will handle result screen.");
-
-        return;
-
-    }
-
-    showQuestion();
-
-};
