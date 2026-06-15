@@ -1,340 +1,52 @@
 <!DOCTYPE html>
-<html lang="ne">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>लोकसेवा Quiz</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loksewa Quiz</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<!-- HOME SCREEN -->
+<div class="container">
 
-<section id="screen-home" class="screen active">
+    <div class="header">
+        <h1>🧠 Loksewa Quiz</h1>
 
-<div class="home-content">
+        <div class="score-board">
+            Score: <span id="score">0</span>
+        </div>
+    </div>
 
-<div class="badge">
-🇳🇵 लोकसेवा आयोग
-</div>
+    <div class="progress-container">
+        <div id="progressBar"></div>
+    </div>
 
-<h1 class="home-title">
+    <div class="counter" id="counter"></div>
 
-<span class="title-ne">
-सामान्य ज्ञान
-</span>
+    <div class="card">
 
-<span class="title-en">
-QUIZ
-</span>
+        <h2 id="question"></h2>
 
-</h1>
+        <div id="options"></div>
 
-<p class="home-sub">
-गोरखापत्र समसामयिक घटनामा आधारित AI Quiz Platform
-</p>
+        <div class="explanation" id="result"></div>
 
-<div class="config-card">
+        <div class="buttons">
 
-<div class="config-row">
+            <button id="prevBtn">
+                ← Previous
+            </button>
 
-<label>
-प्रश्न संख्या
-</label>
+            <button id="nextBtn">
+                Next →
+            </button>
 
-<div class="stepper">
+        </div>
 
-<button class="step-btn" id="q-minus">
-−
-</button>
-
-<span id="q-count-display">
-10
-</span>
-
-<button class="step-btn" id="q-plus">
-+
-</button>
+    </div>
 
 </div>
-
-</div>
-
-<div class="config-row">
-
-<label>
-Timer
-</label>
-
-<input type="checkbox" id="timer-toggle" checked>
-
-</div>
-
-<div class="config-row">
-
-<label>
-Seconds
-</label>
-
-<div class="stepper">
-
-<button class="step-btn" id="t-minus">
-−
-</button>
-
-<span id="t-count-display">
-30
-</span>
-
-<button class="step-btn" id="t-plus">
-+
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-<button id="btn-start" class="btn-start">
-Start Quiz →
-</button>
-
-</div>
-
-</section>
-
-
-<!-- QUIZ SCREEN -->
-
-<section id="screen-quiz" class="screen">
-
-<header class="quiz-header">
-
-<div>
-
-Question
-
-<span id="q-num">
-1 / 10
-</span>
-
-</div>
-
-<div class="progress-wrap">
-
-<div class="progress-bar">
-
-<div id="progress-fill" class="progress-fill">
-
-</div>
-
-</div>
-
-</div>
-
-<div class="timer-wrap">
-
-⏱
-
-<span id="timer-display">
-30
-</span>
-
-</div>
-
-</header>
-
-
-<div class="quiz-body">
-
-<div class="score-live">
-
-✅
-
-<span id="live-correct">
-0
-</span>
-
-|
-
-❌
-
-<span id="live-wrong">
-0
-</span>
-
-</div>
-
-<div class="question-card">
-
-<p id="question-text" class="question-text">
-
-Loading...
-
-</p>
-
-</div>
-
-
-<div id="options-grid" class="options-grid">
-
-</div>
-
-
-<div id="feedback-box" class="feedback-box hidden">
-
-<h3 id="feedback-answer">
-
-</h3>
-
-<p id="feedback-study">
-
-</p>
-
-<button class="btn-next" id="btn-next">
-
-Next →
-
-</button>
-
-</div>
-
-</div>
-
-</section>
-
-
-
-<!-- RESULT SCREEN -->
-
-<section id="screen-result" class="screen">
-
-<div class="result-content">
-
-<div class="result-trophy">
-
-🏆
-
-</div>
-
-<h1 class="result-title">
-
-Quiz Completed
-
-</h1>
-
-<br>
-
-<h2 id="result-pct">
-
-0%
-
-</h2>
-
-<br>
-
-<div class="result-stats">
-
-<div class="stat-box correct-box">
-
-<div class="stat-num" id="res-correct">
-
-0
-
-</div>
-
-<div>
-
-Correct
-
-</div>
-
-</div>
-
-
-<div class="stat-box wrong-box">
-
-<div class="stat-num" id="res-wrong">
-
-0
-
-</div>
-
-<div>
-
-Wrong
-
-</div>
-
-</div>
-
-
-<div class="stat-box skip-box">
-
-<div class="stat-num" id="res-skip">
-
-0
-
-</div>
-
-<div>
-
-Skipped
-
-</div>
-
-</div>
-
-</div>
-
-
-<h2 id="result-badge">
-
-🥈 Excellent
-
-</h2>
-
-<br>
-
-<button class="btn-start" id="btn-review">
-
-Review Answers
-
-</button>
-
-<br><br>
-
-<button class="btn-start" id="btn-restart">
-
-Play Again
-
-</button>
-
-</div>
-
-</section>
-
-
-
-<!-- REVIEW SCREEN -->
-
-<section id="screen-review" class="screen">
-
-<div class="review-list" id="review-list">
-
-</div>
-
-</section>
-
 
 <script src="script.js"></script>
 
