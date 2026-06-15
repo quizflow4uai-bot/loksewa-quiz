@@ -1,103 +1,223 @@
-let questions=[];
-let current=0;
-let score=0;
+let questions = [];
+let current = 0;
+let score = 0;
+let answers = [];
+
+const questionEl = document.getElementById("question");
+const optionsEl = document.getElementById("options");
+const currentEl = document.getElementById("current");
+const totalEl = document.getElementById("total");
+const scoreEl = document.getElementById("score");
+const progressFill = document.getElementById("progressFill");
+const explanationEl = document.getElementById("explanation");
 
 fetch("questions.json")
-.then(r=>r.json())
-.then(data=>{
-    questions=data;
+.then(res => res.json())
+.then(data => {
+
+    questions = data.sort(() => Math.random() - 0.5);
+
+    totalEl.innerText = questions.length;
+
+    answers = Array(questions.length).fill(null);
+
     showQuestion();
+
 });
 
-function showQuestion(){
+function showQuestion() {
 
-    let q=questions[current];
+    let q = questions[current];
 
-    document.getElementById("counter").innerHTML=
-    `Question ${current+1}/${questions.length}`;
+    currentEl.innerText = current + 1;
 
-    document.getElementById("question").innerHTML=q.question;
+    questionEl.innerText = q.question;
 
-    document.getElementById("result").innerHTML="";
+    progressFill.style.width =
+        ((current + 1) / questions.length) * 100 + "%";
 
-    let percent=((current)/questions.length)*100;
-    document.getElementById("progressBar").style.width=percent+"%";
+    optionsEl.innerHTML = "";
 
-    let optionsDiv=document.getElementById("options");
+    for (let key in q.options) {
 
-    optionsDiv.innerHTML="";
+        let div = document.createElement("div");
 
-    for(let key in q.options){
+        div.className = "option";
 
-        let btn=document.createElement("button");
+        if (answers[current] === key) {
+            div.classList.add("selected");
+        }
 
-        btn.className="option";
+        div.innerHTML = `
+        <div class="circle"></div>
+        <div>${q.options[key]}</div>
+        `;
 
-        btn.innerHTML=`${key}. ${q.options[key]}`;
+        div.onclick = () => selectAnswer(key);
 
-        btn.onclick=()=>checkAnswer(key,btn);
+        optionsEl.appendChild(div);
+    }
 
-        optionsDiv.appendChild(btn);
+    if (answers[current]) {
+
+        explanationEl.style.display = "block";
+
+        explanationEl.innerHTML = `
+        <b>Explanation</b>
+        <br><br>
+        ${q.studyPoint}
+        `;
+
+    }
+    else {
+
+        explanationEl.style.display = "none";
 
     }
 
+    scoreEl.innerText = score.toFixed(1);
+
 }
 
-function checkAnswer(choice,button){
+function selectAnswer(choice) {
 
-    let q=questions[current];
+    if (answers[current]) return;
 
-    let buttons=document.querySelectorAll(".option");
+    answers[current] = choice;
 
-    buttons.forEach(btn=>btn.disabled=true);
+    let q = questions[current];
 
-    if(choice===q.correctAnswer){
+    if (choice === q.correctAnswer) {
 
-        score++;
+        score += 1;
 
-        button.classList.add("correct");
+    } else {
 
-        document.getElementById("result").innerHTML=
-        "✅ Correct<br><br>"+q.studyPoint;
-
-    }else{
-
-        button.classList.add("wrong");
-
-        buttons.forEach(btn=>{
-
-            if(btn.innerHTML.startsWith(q.correctAnswer)){
-                btn.classList.add("correct");
-            }
-
-        });
-
-        document.getElementById("result").innerHTML=
-        "❌ Wrong<br><br>"+q.studyPoint;
+        score -= 0.2;
 
     }
 
-    document.getElementById("scoreBox").innerHTML=
-    `Score: ${score}`;
+    showQuestion();
 
 }
 
-document.getElementById("nextBtn").onclick=()=>{
+document.getElementById("nextBtn").onclick = () => {
 
-    current++;
+    if (current < questions.length - 1) {
 
-    if(current>=questions.length){
+        current++;
 
-        document.body.innerHTML=
-        `<h1 style="text-align:center;margin-top:100px">
-        🏆 Quiz Completed<br><br>
-        Score ${score}/${questions.length}
-        </h1>`;
+        showQuestion();
 
-    }else{
+    }
+    else {
+
+        showResult();
+
+    }
+
+};
+
+document.getElementById("prevBtn").onclick = () => {
+
+    if (current > 0) {
+
+        current--;
 
         showQuestion();
 
     }
 
 };
+
+function showResult() {
+
+    let correct = 0;
+    let wrong = 0;
+    let skipped = 0;
+
+    questions.forEach((q, i) => {
+
+        if (answers[i] === null) {
+
+            skipped++;
+
+        }
+        else if (answers[i] === q.correctAnswer) {
+
+            correct++;
+
+        }
+        else {
+
+            wrong++;
+
+        }
+
+    });
+
+    let accuracy =
+        ((correct / questions.length) * 100).toFixed(1);
+
+    let quote = "";
+
+    if (accuracy >= 90) {
+
+        quote =
+            "Consistency has turned knowledge into confidence.";
+
+    }
+    else if (accuracy >= 80) {
+
+        quote =
+            "You're building strong habits.";
+
+    }
+    else if (accuracy >= 60) {
+
+        quote =
+            "A little revision today creates big results tomorrow.";
+
+    }
+    else {
+
+        quote =
+            "Every mistake today becomes experience tomorrow.";
+
+    }
+
+    document.querySelector(".container").innerHTML = `
+
+<div class="resultCard">
+
+<h1>🏆 Finished</h1>
+
+<h2>${score.toFixed(1)}</h2>
+
+<br>
+
+<p>Correct : ${correct}</p>
+
+<br>
+
+<p>Wrong : ${wrong}</p>
+
+<br>
+
+<p>Skipped : ${skipped}</p>
+
+<br>
+
+<p>Accuracy : ${accuracy}%</p>
+
+<div class="quote">
+
+${quote}
+
+</div>
+
+</div>
+
+`;
+
+}
