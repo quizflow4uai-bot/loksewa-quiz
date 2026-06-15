@@ -1,156 +1,342 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+<!DOCTYPE html>
+<html lang="ne">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-body{
-    font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    min-height:100vh;
-    padding:20px;
-}
+<title>लोकसेवा Quiz</title>
 
-.container{
-    max-width:900px;
-    margin:auto;
-}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-.header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    color:white;
-    margin-bottom:20px;
-}
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-.score-board{
-    background:rgba(255,255,255,.2);
-    padding:12px 20px;
-    border-radius:15px;
-    font-size:20px;
-    font-weight:bold;
-    backdrop-filter:blur(10px);
-}
+<link rel="stylesheet" href="style.css">
 
-.progress-container{
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-    height:15px;
-    margin-bottom:20px;
-}
+</head>
+<body>
 
-#progressBar{
-    height:100%;
-    width:0%;
-    background:#22c55e;
-    transition:.4s;
-}
+<!-- HOME SCREEN -->
 
-.counter{
-    color:white;
-    font-size:18px;
-    margin-bottom:15px;
-}
+<section id="screen-home" class="screen active">
 
-.card{
-    background:rgba(255,255,255,.95);
-    border-radius:25px;
-    padding:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,.2);
-}
+<div class="home-content">
 
-#question{
-    margin-bottom:25px;
-    line-height:1.6;
-}
+<div class="badge">
+🇳🇵 लोकसेवा आयोग
+</div>
 
-.option{
-    width:100%;
-    padding:18px;
-    border:none;
-    margin:12px 0;
-    border-radius:15px;
-    background:#f3f4f6;
-    font-size:18px;
-    cursor:pointer;
-    transition:.3s;
-}
+<h1 class="home-title">
 
-.option:hover{
-    transform:translateY(-2px);
-    background:#dbeafe;
-}
+<span class="title-ne">
+सामान्य ज्ञान
+</span>
 
-.correct{
-    background:#22c55e !important;
-    color:white;
-}
+<span class="title-en">
+QUIZ
+</span>
 
-.wrong{
-    background:#ef4444 !important;
-    color:white;
-}
+</h1>
 
-.explanation{
-    margin-top:20px;
-    padding:20px;
-    background:#f9fafb;
-    border-left:5px solid #2563eb;
-    border-radius:10px;
-    line-height:1.6;
-}
+<p class="home-sub">
+गोरखापत्र समसामयिक घटनामा आधारित AI Quiz Platform
+</p>
 
-.buttons{
-    display:flex;
-    justify-content:space-between;
-    margin-top:25px;
-}
+<div class="config-card">
 
-#prevBtn,#nextBtn{
-    border:none;
-    padding:15px 25px;
-    border-radius:15px;
-    font-size:17px;
-    cursor:pointer;
-    color:white;
-}
+<div class="config-row">
 
-#prevBtn{
-    background:#6b7280;
-}
+<label>
+प्रश्न संख्या
+</label>
 
-#nextBtn{
-    background:#2563eb;
-}
+<div class="stepper">
 
-#prevBtn:hover,#nextBtn:hover{
-    opacity:.9;
-}
+<button class="step-btn" id="q-minus">
+−
+</button>
 
-@media(max-width:768px){
+<span id="q-count-display">
+10
+</span>
 
-.header{
-    flex-direction:column;
-    gap:15px;
-}
+<button class="step-btn" id="q-plus">
++
+</button>
 
-.buttons{
-    flex-direction:column;
-    gap:15px;
-}
+</div>
 
-#prevBtn,#nextBtn{
-    width:100%;
-}
+</div>
 
-.card{
-    padding:20px;
-}
+<div class="config-row">
 
-.option{
-    font-size:16px;
-}
+<label>
+Timer
+</label>
 
-}
+<input type="checkbox" id="timer-toggle" checked>
+
+</div>
+
+<div class="config-row">
+
+<label>
+Seconds
+</label>
+
+<div class="stepper">
+
+<button class="step-btn" id="t-minus">
+−
+</button>
+
+<span id="t-count-display">
+30
+</span>
+
+<button class="step-btn" id="t-plus">
++
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<button id="btn-start" class="btn-start">
+Start Quiz →
+</button>
+
+</div>
+
+</section>
+
+
+<!-- QUIZ SCREEN -->
+
+<section id="screen-quiz" class="screen">
+
+<header class="quiz-header">
+
+<div>
+
+Question
+
+<span id="q-num">
+1 / 10
+</span>
+
+</div>
+
+<div class="progress-wrap">
+
+<div class="progress-bar">
+
+<div id="progress-fill" class="progress-fill">
+
+</div>
+
+</div>
+
+</div>
+
+<div class="timer-wrap">
+
+⏱
+
+<span id="timer-display">
+30
+</span>
+
+</div>
+
+</header>
+
+
+<div class="quiz-body">
+
+<div class="score-live">
+
+✅
+
+<span id="live-correct">
+0
+</span>
+
+|
+
+❌
+
+<span id="live-wrong">
+0
+</span>
+
+</div>
+
+<div class="question-card">
+
+<p id="question-text" class="question-text">
+
+Loading...
+
+</p>
+
+</div>
+
+
+<div id="options-grid" class="options-grid">
+
+</div>
+
+
+<div id="feedback-box" class="feedback-box hidden">
+
+<h3 id="feedback-answer">
+
+</h3>
+
+<p id="feedback-study">
+
+</p>
+
+<button class="btn-next" id="btn-next">
+
+Next →
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- RESULT SCREEN -->
+
+<section id="screen-result" class="screen">
+
+<div class="result-content">
+
+<div class="result-trophy">
+
+🏆
+
+</div>
+
+<h1 class="result-title">
+
+Quiz Completed
+
+</h1>
+
+<br>
+
+<h2 id="result-pct">
+
+0%
+
+</h2>
+
+<br>
+
+<div class="result-stats">
+
+<div class="stat-box correct-box">
+
+<div class="stat-num" id="res-correct">
+
+0
+
+</div>
+
+<div>
+
+Correct
+
+</div>
+
+</div>
+
+
+<div class="stat-box wrong-box">
+
+<div class="stat-num" id="res-wrong">
+
+0
+
+</div>
+
+<div>
+
+Wrong
+
+</div>
+
+</div>
+
+
+<div class="stat-box skip-box">
+
+<div class="stat-num" id="res-skip">
+
+0
+
+</div>
+
+<div>
+
+Skipped
+
+</div>
+
+</div>
+
+</div>
+
+
+<h2 id="result-badge">
+
+🥈 Excellent
+
+</h2>
+
+<br>
+
+<button class="btn-start" id="btn-review">
+
+Review Answers
+
+</button>
+
+<br><br>
+
+<button class="btn-start" id="btn-restart">
+
+Play Again
+
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- REVIEW SCREEN -->
+
+<section id="screen-review" class="screen">
+
+<div class="review-list" id="review-list">
+
+</div>
+
+</section>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
