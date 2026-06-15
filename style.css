@@ -1,1 +1,25 @@
+body{
+    background:#f3f4f6;
+    font-family:Arial;
+}
 
+.container{
+    width:700px;
+    background:white;
+    margin:auto;
+    margin-top:50px;
+    padding:30px;
+    border-radius:10px;
+}
+
+.option{
+    display:block;
+    width:100%;
+    margin:10px 0;
+    padding:15px;
+    cursor:pointer;
+}
+
+#nextBtn{
+    padding:15px;
+}
