@@ -1,112 +1,388 @@
+```html
 <!DOCTYPE html>
 <html lang="ne">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Loksewa Quiz</title>
 
-<title>Loksewa Daily</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style>
 
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Noto Sans Devanagari',sans-serif;
+}
 
-<link rel="stylesheet" href="style.css">
+body{
+background:#F8FAFC;
+display:flex;
+justify-content:center;
+min-height:100vh;
+}
 
+.container{
+width:100%;
+max-width:450px;
+padding:25px;
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.progress{
+height:8px;
+background:#E2E8F0;
+border-radius:50px;
+overflow:hidden;
+margin-bottom:40px;
+}
+
+.progressFill{
+height:100%;
+width:0%;
+background:#60A5FA;
+transition:.3s;
+}
+
+.question{
+text-align:center;
+font-size:30px;
+font-weight:700;
+line-height:1.7;
+margin-bottom:40px;
+color:#1E293B;
+}
+
+.options{
+display:flex;
+flex-direction:column;
+gap:16px;
+}
+
+.option{
+background:white;
+padding:22px;
+border-radius:24px;
+border:2px solid #F1F5F9;
+cursor:pointer;
+transition:.2s;
+display:flex;
+align-items:center;
+gap:15px;
+}
+
+.circle{
+width:28px;
+height:28px;
+border-radius:50%;
+border:3px solid #BAE6FD;
+}
+
+.selected{
+background:#F3E8FF;
+border-color:#A78BFA;
+}
+
+.selected .circle{
+background:#7C3AED;
+border-color:#7C3AED;
+}
+
+.correct{
+background:#DCFCE7;
+}
+
+.wrong{
+background:#FEF3C7;
+}
+
+.explanation{
+margin-top:30px;
+background:white;
+padding:25px;
+border-radius:25px;
+display:none;
+line-height:1.8;
+max-height:250px;
+overflow:auto;
+}
+
+.bottom{
+margin-top:40px;
+display:flex;
+gap:15px;
+}
+
+button{
+flex:1;
+border:none;
+padding:20px;
+border-radius:40px;
+font-size:16px;
+cursor:pointer;
+}
+
+#prevBtn{
+background:#E2E8F0;
+}
+
+#nextBtn{
+background:#CBD5E1;
+color:white;
+}
+
+.enabled{
+background:black!important;
+}
+
+</style>
 </head>
 <body>
 
 <div class="container">
 
-<header>
+<div class="top">
 
-<div class="top-row">
-
-<div class="question-count">
-<span id="currentNo">1</span>/<span id="totalNo">20</span>
+<div>
+<span id="current">1</span>/<span id="total">1</span>
 </div>
 
-<div class="timer">
-
-⏱ <span id="timer">30</span>
-
+<div>
+Score: <span id="score">0</span>
 </div>
 
 </div>
 
 <div class="progress">
-
-<div class="progress-fill" id="progressFill"></div>
-
+<div class="progressFill" id="progressFill"></div>
 </div>
 
-</header>
+<div class="question" id="question"></div>
 
+<div class="options" id="options"></div>
 
-<main>
+<div class="explanation" id="explanation"></div>
 
-<div class="question-card">
-
-<h2 id="question">
-
-Loading...
-
-</h2>
-
-</div>
-
-
-<div class="options" id="options">
-
-</div>
-
-
-<div class="feedback hidden" id="feedback">
-
-<div class="feedback-title" id="feedbackTitle">
-
-</div>
-
-<div class="answer-box" id="correctAnswer">
-
-</div>
-
-<div class="explanation-box">
-
-<h3>Explanation</h3>
-
-<p id="explanation">
-
-</p>
-
-</div>
-
-</div>
-
-</main>
-
-
-<footer>
+<div class="bottom">
 
 <button id="prevBtn">
-
 ← Previous
-
 </button>
-
 
 <button id="nextBtn">
-
 Next →
-
 </button>
-
-</footer>
-
 
 </div>
 
-<script src="script.js"></script>
+</div>
+
+<script>
+
+let questions=[];
+let current=0;
+let score=0;
+let answers=[];
+
+fetch("questions.json")
+.then(res=>res.json())
+.then(data=>{
+
+questions=data.sort(()=>Math.random()-0.5);
+
+document.getElementById("total").innerHTML=questions.length;
+
+answers=new Array(questions.length);
+
+showQuestion();
+
+});
+
+function showQuestion(){
+
+let q=questions[current];
+
+document.getElementById("current").innerHTML=current+1;
+
+document.getElementById("question").innerHTML=q.question;
+
+document.getElementById("progressFill").style.width=
+((current+1)/questions.length)*100+"%";
+
+let html="";
+
+for(let key in q.options){
+
+html+=`
+<div class="option ${answers[current]==key?"selected":""}"
+onclick="selectAnswer('${key}')">
+
+<div class="circle"></div>
+
+<div>
+
+${q.options[key]}
+
+</div>
+
+</div>
+`;
+
+}
+
+document.getElementById("options").innerHTML=html;
+
+if(answers[current]){
+
+document.getElementById("explanation").style.display="block";
+
+document.getElementById("explanation").innerHTML=
+"<b>Explanation</b><br><br>"+q.studyPoint;
+
+}else{
+
+document.getElementById("explanation").style.display="none";
+
+}
+
+}
+
+function selectAnswer(choice){
+
+if(!answers[current]){
+
+answers[current]=choice;
+
+let q=questions[current];
+
+if(choice===q.correctAnswer){
+
+score+=1;
+
+}else{
+
+score-=0.2;
+
+}
+
+document.getElementById("score").innerHTML=
+score.toFixed(1);
+
+}
+
+showQuestion();
+
+document.getElementById("nextBtn")
+.classList.add("enabled");
+
+}
+
+document.getElementById("nextBtn")
+.onclick=()=>{
+
+if(current<questions.length-1){
+
+current++;
+
+showQuestion();
+
+}else{
+
+showResult();
+
+}
+
+};
+
+document.getElementById("prevBtn")
+.onclick=()=>{
+
+if(current>0){
+
+current--;
+
+showQuestion();
+
+}
+
+};
+
+function showResult(){
+
+let correct=0;
+let wrong=0;
+
+questions.forEach((q,i)=>{
+
+if(answers[i]==q.correctAnswer){
+
+correct++;
+
+}
+else{
+
+wrong++;
+
+}
+
+});
+
+document.body.innerHTML=`
+
+<div class="container">
+
+<div style="text-align:center">
+
+<h1>Finished</h1>
+
+<br>
+
+<h2>${score.toFixed(1)}</h2>
+
+<br>
+
+Correct : ${correct}
+
+<br><br>
+
+Wrong : ${wrong}
+
+<br><br>
+
+Accuracy :
+${((correct/questions.length)*100).toFixed(1)}%
+
+<br><br><br>
+
+<div style="background:white;
+padding:25px;
+border-radius:25px;
+line-height:1.8">
+
+Consistency beats intensity.
+
+One page revised every day is stronger than ten hours once a week.
+
+</div>
+
+</div>
+
+</div>
+
+`;
+
+}
+
+</script>
 
 </body>
 </html>
+```
