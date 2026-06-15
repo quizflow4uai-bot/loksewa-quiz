@@ -1,6 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loksewa Quiz</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -8,15 +10,41 @@
 
 <div class="container">
 
-    <h2 id="question"></h2>
+    <div class="header">
+        <h1>🧠 Loksewa Quiz</h1>
 
-    <div id="options"></div>
+        <div class="score-board">
+            Score: <span id="score">0</span>
+        </div>
+    </div>
 
-    <div id="result"></div>
+    <div class="progress-container">
+        <div id="progressBar"></div>
+    </div>
 
-    <br>
+    <div class="counter" id="counter"></div>
 
-    <button id="nextBtn">Next Question</button>
+    <div class="card">
+
+        <h2 id="question"></h2>
+
+        <div id="options"></div>
+
+        <div class="explanation" id="result"></div>
+
+        <div class="buttons">
+
+            <button id="prevBtn">
+                ← Previous
+            </button>
+
+            <button id="nextBtn">
+                Next →
+            </button>
+
+        </div>
+
+    </div>
 
 </div>
 
