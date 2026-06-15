@@ -1,86 +1,41 @@
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
 body{
+    background:#f3f4f6;
     font-family:Arial,sans-serif;
-    background:linear-gradient(135deg,#2563eb,#7c3aed);
-    min-height:100vh;
-    padding:20px;
+    margin:0;
 }
 
 .container{
     max-width:900px;
     margin:auto;
+    padding:20px;
 }
 
-.header{
+.top{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    color:white;
-    margin-bottom:20px;
-}
-
-.score-board{
-    background:rgba(255,255,255,.2);
-    padding:12px 20px;
-    border-radius:15px;
-    font-size:20px;
-    font-weight:bold;
-    backdrop-filter:blur(10px);
-}
-
-.progress-container{
-    background:white;
-    border-radius:20px;
-    overflow:hidden;
-    height:15px;
-    margin-bottom:20px;
-}
-
-#progressBar{
-    height:100%;
-    width:0%;
-    background:#22c55e;
-    transition:.4s;
-}
-
-.counter{
-    color:white;
-    font-size:18px;
-    margin-bottom:15px;
 }
 
 .card{
-    background:rgba(255,255,255,.95);
-    border-radius:25px;
+    background:white;
     padding:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,.2);
-}
-
-#question{
-    margin-bottom:25px;
-    line-height:1.6;
+    border-radius:15px;
+    box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
 
 .option{
     width:100%;
     padding:18px;
+    margin:10px 0;
     border:none;
-    margin:12px 0;
-    border-radius:15px;
-    background:#f3f4f6;
-    font-size:18px;
+    border-radius:10px;
+    background:#e5e7eb;
     cursor:pointer;
-    transition:.3s;
+    font-size:18px;
 }
 
 .option:hover{
-    transform:translateY(-2px);
-    background:#dbeafe;
+    background:#d1d5db;
 }
 
 .correct{
@@ -93,64 +48,30 @@ body{
     color:white;
 }
 
-.explanation{
+#result{
     margin-top:20px;
-    padding:20px;
-    background:#f9fafb;
-    border-left:5px solid #2563eb;
-    border-radius:10px;
-    line-height:1.6;
-}
-
-.buttons{
-    display:flex;
-    justify-content:space-between;
-    margin-top:25px;
-}
-
-#prevBtn,#nextBtn{
-    border:none;
-    padding:15px 25px;
-    border-radius:15px;
-    font-size:17px;
-    cursor:pointer;
-    color:white;
-}
-
-#prevBtn{
-    background:#6b7280;
+    font-size:18px;
 }
 
 #nextBtn{
+    margin-top:20px;
+    padding:15px;
+    border:none;
+    border-radius:10px;
     background:#2563eb;
+    color:white;
+    cursor:pointer;
 }
 
-#prevBtn:hover,#nextBtn:hover{
-    opacity:.9;
+.progress-container{
+    background:#ddd;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:20px;
 }
 
-@media(max-width:768px){
-
-.header{
-    flex-direction:column;
-    gap:15px;
-}
-
-.buttons{
-    flex-direction:column;
-    gap:15px;
-}
-
-#prevBtn,#nextBtn{
-    width:100%;
-}
-
-.card{
-    padding:20px;
-}
-
-.option{
-    font-size:16px;
-}
-
+#progressBar{
+    height:15px;
+    width:0%;
+    background:#2563eb;
 }
