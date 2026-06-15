@@ -1,15 +1,33 @@
+```javascript
+// ===== STATE =====
+
 let questions = [];
+let answers = [];
 let current = 0;
 let score = 0;
-let answers = [];
+
+// ===== ELEMENTS =====
 
 const questionEl = document.getElementById("question");
 const optionsEl = document.getElementById("options");
+
 const currentEl = document.getElementById("current");
 const totalEl = document.getElementById("total");
+
 const scoreEl = document.getElementById("score");
+
 const progressFill = document.getElementById("progressFill");
-const explanationEl = document.getElementById("explanation");
+
+const feedbackCard = document.getElementById("feedbackCard");
+
+const answerStatus = document.getElementById("answerStatus");
+
+const correctAnswerBox = document.getElementById("correctAnswerBox");
+
+const fullExplanation = document.getElementById("fullExplanation");
+
+
+// ===== LOAD QUESTIONS =====
 
 fetch("questions.json")
 .then(res => res.json())
@@ -25,92 +43,171 @@ fetch("questions.json")
 
 });
 
-function showQuestion() {
+
+// ===== SHOW QUESTION =====
+
+function showQuestion(){
 
     let q = questions[current];
 
     currentEl.innerText = current + 1;
 
-    questionEl.innerText = q.question;
+    questionEl.innerHTML = q.question;
 
     progressFill.style.width =
-        ((current + 1) / questions.length) * 100 + "%";
-
-    optionsEl.innerHTML = "";
-
-    for (let key in q.options) {
-
-        let div = document.createElement("div");
-
-        div.className = "option";
-
-        if (answers[current] === key) {
-            div.classList.add("selected");
-        }
-
-        div.innerHTML = `
-        <div class="circle"></div>
-        <div>${q.options[key]}</div>
-        `;
-
-        div.onclick = () => selectAnswer(key);
-
-        optionsEl.appendChild(div);
-    }
-
-    if (answers[current]) {
-
-        explanationEl.style.display = "block";
-
-        explanationEl.innerHTML = `
-        <b>Explanation</b>
-        <br><br>
-        ${q.studyPoint}
-        `;
-
-    }
-    else {
-
-        explanationEl.style.display = "none";
-
-    }
+    ((current+1)/questions.length)*100+"%";
 
     scoreEl.innerText = score.toFixed(1);
 
+    optionsEl.innerHTML = "";
+
+    for(let key in q.options){
+
+        let option = document.createElement("div");
+
+        option.className = "option";
+
+        if(answers[current] &&
+           answers[current].choice === key){
+
+            option.classList.add("selected");
+
+        }
+
+        option.innerHTML = `
+
+        <div class="circle"></div>
+
+        <div>
+
+        ${q.options[key]}
+
+        </div>
+
+        `;
+
+        option.onclick = ()=>selectAnswer(key);
+
+        optionsEl.appendChild(option);
+
+    }
+
+
+    // Restore explanation
+
+    if(answers[current]){
+
+        showFeedback();
+
+    }
+    else{
+
+        feedbackCard.classList.add("hidden");
+
+    }
+
 }
 
-function selectAnswer(choice) {
 
-    if (answers[current]) return;
 
-    answers[current] = choice;
+// ===== SELECT ANSWER =====
+
+function selectAnswer(choice){
+
+    if(answers[current]) return;
 
     let q = questions[current];
 
-    if (choice === q.correctAnswer) {
+    let correct = choice === q.correctAnswer;
+
+    answers[current] = {
+
+        choice:choice,
+
+        correct:correct
+
+    };
+
+    if(correct){
 
         score += 1;
 
-    } else {
+    }
+    else{
 
         score -= 0.2;
 
     }
 
-    showQuestion();
+    scoreEl.innerText = score.toFixed(1);
+
+    showFeedback();
 
 }
 
-document.getElementById("nextBtn").onclick = () => {
 
-    if (current < questions.length - 1) {
+
+// ===== FEEDBACK =====
+
+function showFeedback(){
+
+    let q = questions[current];
+
+    let userAnswer = answers[current];
+
+    feedbackCard.classList.remove("hidden");
+
+    if(userAnswer.correct){
+
+        answerStatus.innerHTML =
+
+        "✅ Correct";
+
+    }
+    else{
+
+        answerStatus.innerHTML =
+
+        "❌ Wrong";
+
+    }
+
+    correctAnswerBox.innerHTML =
+
+    `
+    Correct Answer
+
+    <br><br>
+
+    <b>
+
+    ${q.correctAnswer}.
+    ${q.options[q.correctAnswer]}
+
+    </b>
+    `;
+
+    fullExplanation.innerHTML =
+
+    q.studyPoint;
+
+}
+
+
+
+// ===== NEXT =====
+
+document.getElementById("nextBtn")
+.onclick = ()=>{
+
+    if(current < questions.length-1){
 
         current++;
 
         showQuestion();
 
     }
-    else {
+    else{
 
         showResult();
 
@@ -118,9 +215,13 @@ document.getElementById("nextBtn").onclick = () => {
 
 };
 
-document.getElementById("prevBtn").onclick = () => {
 
-    if (current > 0) {
+// ===== PREVIOUS =====
+
+document.getElementById("prevBtn")
+.onclick = ()=>{
+
+    if(current>0){
 
         current--;
 
@@ -130,25 +231,38 @@ document.getElementById("prevBtn").onclick = () => {
 
 };
 
-function showResult() {
+
+
+// ===== RESULT =====
+
+function showResult(){
+
+    document.getElementById("quizContainer")
+    .classList.add("hidden");
+
+    document.getElementById("resultScreen")
+    .classList.remove("hidden");
+
 
     let correct = 0;
     let wrong = 0;
     let skipped = 0;
 
-    questions.forEach((q, i) => {
+    answers.forEach(a=>{
 
-        if (answers[i] === null) {
+        if(a===null){
 
             skipped++;
 
         }
-        else if (answers[i] === q.correctAnswer) {
+
+        else if(a.correct){
 
             correct++;
 
         }
-        else {
+
+        else{
 
             wrong++;
 
@@ -156,68 +270,73 @@ function showResult() {
 
     });
 
+    document.getElementById("finalScore")
+    .innerText = score.toFixed(1);
+
+    document.getElementById("correctCount")
+    .innerText = correct;
+
+    document.getElementById("wrongCount")
+    .innerText = wrong;
+
+    document.getElementById("skippedCount")
+    .innerText = skipped;
+
     let accuracy =
-        ((correct / questions.length) * 100).toFixed(1);
+    ((correct/questions.length)*100)
+    .toFixed(1);
+
+    document.getElementById("accuracy")
+    .innerText = accuracy+"%";
+
 
     let quote = "";
 
-    if (accuracy >= 90) {
+    if(accuracy>=90){
 
         quote =
-            "Consistency has turned knowledge into confidence.";
 
-    }
-    else if (accuracy >= 80) {
-
-        quote =
-            "You're building strong habits.";
-
-    }
-    else if (accuracy >= 60) {
-
-        quote =
-            "A little revision today creates big results tomorrow.";
-
-    }
-    else {
-
-        quote =
-            "Every mistake today becomes experience tomorrow.";
+        "Consistency has turned knowledge into confidence.";
 
     }
 
-    document.querySelector(".container").innerHTML = `
+    else if(accuracy>=80){
 
-<div class="resultCard">
+        quote =
 
-<h1>🏆 Finished</h1>
+        "You're building strong habits.";
 
-<h2>${score.toFixed(1)}</h2>
+    }
 
-<br>
+    else if(accuracy>=60){
 
-<p>Correct : ${correct}</p>
+        quote =
 
-<br>
+        "A little revision today creates big results tomorrow.";
 
-<p>Wrong : ${wrong}</p>
+    }
 
-<br>
+    else{
 
-<p>Skipped : ${skipped}</p>
+        quote =
 
-<br>
+        "Every mistake today becomes experience tomorrow.";
 
-<p>Accuracy : ${accuracy}%</p>
+    }
 
-<div class="quote">
-
-${quote}
-
-</div>
-
-</div>
-
-`;
+    document.getElementById("quote")
+    .innerText = quote;
 
 }
+
+
+
+// ===== RESTART =====
+
+document.getElementById("restartBtn")
+.onclick = ()=>{
+
+    location.reload();
+
+};
+```
