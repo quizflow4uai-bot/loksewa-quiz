@@ -1,25 +1,156 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
 body{
-    background:#f3f4f6;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
+    background:linear-gradient(135deg,#2563eb,#7c3aed);
+    min-height:100vh;
+    padding:20px;
 }
 
 .container{
-    width:700px;
-    background:white;
+    max-width:900px;
     margin:auto;
-    margin-top:50px;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    color:white;
+    margin-bottom:20px;
+}
+
+.score-board{
+    background:rgba(255,255,255,.2);
+    padding:12px 20px;
+    border-radius:15px;
+    font-size:20px;
+    font-weight:bold;
+    backdrop-filter:blur(10px);
+}
+
+.progress-container{
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    height:15px;
+    margin-bottom:20px;
+}
+
+#progressBar{
+    height:100%;
+    width:0%;
+    background:#22c55e;
+    transition:.4s;
+}
+
+.counter{
+    color:white;
+    font-size:18px;
+    margin-bottom:15px;
+}
+
+.card{
+    background:rgba(255,255,255,.95);
+    border-radius:25px;
     padding:30px;
-    border-radius:10px;
+    box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+#question{
+    margin-bottom:25px;
+    line-height:1.6;
 }
 
 .option{
-    display:block;
     width:100%;
-    margin:10px 0;
-    padding:15px;
+    padding:18px;
+    border:none;
+    margin:12px 0;
+    border-radius:15px;
+    background:#f3f4f6;
+    font-size:18px;
     cursor:pointer;
+    transition:.3s;
+}
+
+.option:hover{
+    transform:translateY(-2px);
+    background:#dbeafe;
+}
+
+.correct{
+    background:#22c55e !important;
+    color:white;
+}
+
+.wrong{
+    background:#ef4444 !important;
+    color:white;
+}
+
+.explanation{
+    margin-top:20px;
+    padding:20px;
+    background:#f9fafb;
+    border-left:5px solid #2563eb;
+    border-radius:10px;
+    line-height:1.6;
+}
+
+.buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-top:25px;
+}
+
+#prevBtn,#nextBtn{
+    border:none;
+    padding:15px 25px;
+    border-radius:15px;
+    font-size:17px;
+    cursor:pointer;
+    color:white;
+}
+
+#prevBtn{
+    background:#6b7280;
 }
 
 #nextBtn{
-    padding:15px;
+    background:#2563eb;
+}
+
+#prevBtn:hover,#nextBtn:hover{
+    opacity:.9;
+}
+
+@media(max-width:768px){
+
+.header{
+    flex-direction:column;
+    gap:15px;
+}
+
+.buttons{
+    flex-direction:column;
+    gap:15px;
+}
+
+#prevBtn,#nextBtn{
+    width:100%;
+}
+
+.card{
+    padding:20px;
+}
+
+.option{
+    font-size:16px;
+}
+
 }
