@@ -1,35 +1,108 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ne">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loksewa Quiz</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Loksewa Daily</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
 <div class="container">
 
-    <div class="top">
-        <h1>🧠 Loksewa Quiz</h1>
-        <h3 id="scoreBox">Score: 0</h3>
-    </div>
+<header>
 
-    <div class="progress-container">
-        <div id="progressBar"></div>
-    </div>
+<div class="top-row">
 
-    <h2 id="counter"></h2>
+<div class="question-count">
+<span id="currentNo">1</span>/<span id="totalNo">20</span>
+</div>
 
-    <div class="card">
-        <h2 id="question"></h2>
+<div class="timer">
 
-        <div id="options"></div>
+⏱ <span id="timer">30</span>
 
-        <div id="result"></div>
+</div>
 
-        <button id="nextBtn">Next Question →</button>
-    </div>
+</div>
+
+<div class="progress">
+
+<div class="progress-fill" id="progressFill"></div>
+
+</div>
+
+</header>
+
+
+<main>
+
+<div class="question-card">
+
+<h2 id="question">
+
+Loading...
+
+</h2>
+
+</div>
+
+
+<div class="options" id="options">
+
+</div>
+
+
+<div class="feedback hidden" id="feedback">
+
+<div class="feedback-title" id="feedbackTitle">
+
+</div>
+
+<div class="answer-box" id="correctAnswer">
+
+</div>
+
+<div class="explanation-box">
+
+<h3>Explanation</h3>
+
+<p id="explanation">
+
+</p>
+
+</div>
+
+</div>
+
+</main>
+
+
+<footer>
+
+<button id="prevBtn">
+
+← Previous
+
+</button>
+
+
+<button id="nextBtn">
+
+Next →
+
+</button>
+
+</footer>
+
 
 </div>
 
