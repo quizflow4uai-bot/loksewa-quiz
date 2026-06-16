@@ -4,6 +4,9 @@ let questions = [];
 let answers = [];
 let current = 0;
 let score = 0;
+let wrongQuestions = [];
+let timer;
+let timeLeft = 30;
 
 // ===== ELEMENTS =====
 
@@ -55,6 +58,9 @@ function showQuestion() {
 
     let q = questions[current];
 
+    startTimer();
+
+
     currentEl.innerText = current + 1;
 
     questionEl.innerHTML = q.question;
@@ -92,16 +98,18 @@ function showQuestion() {
 
     }
 
-    if (answers[current]) {
+   if (answers[current]) {
 
-        showFeedback();
+    showFeedback();
 
-    }
-    else {
+    highlightOptions();
 
-        feedbackCard.classList.add("hidden");
+}
+else {
 
-    }
+    feedbackCard.classList.add("hidden");
+
+}
 
 }
 
@@ -111,6 +119,7 @@ function showQuestion() {
 function selectAnswer(choice) {
 
     if (answers[current]) return;
+    clearInterval(timer);
 
     let q = questions[current];
 
@@ -124,14 +133,18 @@ function selectAnswer(choice) {
 
     };
 
-    if (correct) {
+  if (correct) {
 
-        score += 1;
+    score += 1;
 
-    }
-    else {
+}
+else {
 
-        score -= 0.2;
+    score -= 0.2;
+
+    wrongQuestions.push(q);
+
+}
 
     }
 
@@ -188,17 +201,18 @@ function showFeedback() {
 
     let userAnswer = answers[current];
 
-    if (userAnswer.correct) {
+   if (userAnswer.correct) {
 
-        answerStatus.innerHTML = "✅ Correct";
+    answerStatus.innerHTML =
+    "<span style='color:#16A34A'>✓ Correct</span>";
 
-    }
-    else {
+}
+else {
 
-        answerStatus.innerHTML = "❌ Wrong";
+    answerStatus.innerHTML =
+    "<span style='color:#DC2626'>✗ Wrong</span>";
 
-    }
-
+}
     correctAnswerBox.innerHTML = `
         Correct Answer
         <br><br>
@@ -208,10 +222,65 @@ function showFeedback() {
         </b>
     `;
 
-    fullExplanation.innerHTML = q.studyPoint;
+    fullExplanation.innerHTML = q.studyPoint
+    .split("\n")
+    .map(line => line.trim())
+    .filter(line => line.length > 0)
+    .join("<br><br>");
+
+}
+// ===== TIMER =====
+
+function startTimer() {
+
+    clearInterval(timer);
+
+    timeLeft = 30;
+
+    document.getElementById("timer").innerText = timeLeft;
+    
+const timerElement = document.getElementById("timer");
+
+if (timeLeft <= 10) {
+
+    timerElement.style.color = "#DC2626";
+
+}
+else {
+
+    timerElement.style.color = "#64748B";
+
+}
+    timer = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("timer").innerText = timeLeft;
+
+       if (timeLeft <= 0) {
+
+    clearInterval(timer);
+
+    if (current < questions.length - 1) {
+
+        current++;
+
+        showQuestion();
+
+    }
+    else {
+
+        showResult();
+
+    }
 
 }
 
+        }
+
+    }, 1000);
+
+}
 
 // ===== NEXT =====
 
@@ -251,7 +320,7 @@ document.getElementById("prevBtn").onclick = () => {
 // ===== RESULT =====
 
 function showResult() {
-
+clearInterval(timer);
     document.getElementById("quizContainer")
         .classList.add("hidden");
 
@@ -337,6 +406,87 @@ function showResult() {
 // ===== RESTART =====
 
 document.getElementById("restartBtn").onclick = () => {
+
+    location.reload();
+
+};
+document.getElementById("reviewBtn").onclick = () => {
+
+    document.getElementById("resultScreen")
+    .classList.add("hidden");
+
+    document.getElementById("reviewScreen")
+    .classList.remove("hidden");
+
+    let html = "";
+
+    questions.forEach((q, i) => {
+
+        html += `
+
+<div class="reviewCard">
+
+<h3>${i+1}. ${q.question}</h3>
+
+<br>
+
+<b>Your answer:</b>
+
+${answers[i] ? q.options[answers[i].choice] : "Skipped"}
+
+<br><br>
+
+<b>Correct answer:</b>
+
+${q.options[q.correctAnswer]}
+
+<br><br>
+
+<b>Explanation:</b>
+
+<br><br>
+
+${q.studyPoint.replaceAll("\n","<br><br>")}
+
+</div>
+
+`;
+
+    });
+
+    document.getElementById("reviewContainer")
+    .innerHTML = html;
+
+};
+document.getElementById("backBtn").onclick = () => {
+
+    document.getElementById("reviewScreen")
+    .classList.add("hidden");
+
+    document.getElementById("resultScreen")
+    .classList.remove("hidden");
+
+};
+document.getElementById("reattemptWrongBtn").onclick = () => {
+
+    questions = [...wrongQuestions];
+
+    answers = Array(questions.length).fill(null);
+
+    current = 0;
+
+    score = 0;
+
+    document.getElementById("resultScreen")
+    .classList.add("hidden");
+
+    document.getElementById("quizContainer")
+    .classList.remove("hidden");
+
+    showQuestion();
+
+};
+document.getElementById("reattemptAllBtn").onclick = () => {
 
     location.reload();
 
